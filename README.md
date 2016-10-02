@@ -1,3 +1,7 @@
+Under construction, nothing works.
+
+----------------------------------
+
 # Fabric Java
 
 To build the peer, run in this directory:
