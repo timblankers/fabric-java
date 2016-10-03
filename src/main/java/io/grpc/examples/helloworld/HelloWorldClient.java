@@ -76,7 +76,6 @@ public class HelloWorldClient {
           .setName(name)
           .setType(Message.Type.DISC_HELLO)
           .setTimestamp(Timestamp.newBuilder().setSeconds(time.getEpochSecond())
-    .setNanos(time.getNano()).build())
           .build();
     Message response;
     try {
