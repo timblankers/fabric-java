@@ -10,18 +10,15 @@ To build the peer, run in this directory:
 $ ./gradlew installDist
 ```
 
-This creates the scripts `hello-world-server`, `hello-world-client`,
-`route-guide-server`, and `route-guide-client` in the
-`build/install/examples/bin/` directory that run the examples. Each
-example requires the server to be running before starting the client.
+This creates the script `hello-world-client`.
 
-For example, to try the hello world example first run:
+To launch a regular Go Fabric peer, first run:
 
 ```
-$ ./build/install/examples/bin/hello-world-server
+$ docker-compose up
 ```
 
-And in a different terminal window run:
+Then try the java peer:
 
 ```
 $ ./build/install/examples/bin/hello-world-client
@@ -38,8 +35,5 @@ information.
 If you prefer to use Maven:
 ```
 $ mvn verify
-$ # Run the server
-$ mvn exec:java -Dexec.mainClass=io.grpc.examples.helloworld.HelloWorldServer
-$ # In another terminal run the client
 $ mvn exec:java -Dexec.mainClass=io.grpc.examples.helloworld.HelloWorldClient
 ```
