@@ -43,7 +43,7 @@ import java.util.logging.Logger;
 import java.time.Instant;
 
 /**
- * A simple client that requests a greeting from the {@link HelloWorldServer}.
+ * A simple client that sends a discovery message
  */
 public class HelloWorldClient {
   private static final Logger logger = Logger.getLogger(HelloWorldClient.class.getName());
