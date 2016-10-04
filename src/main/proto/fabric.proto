@@ -5,8 +5,8 @@ import "google/protobuf/timestamp.proto";
 
 option java_multiple_files = true;
 option java_package = "io.grpc.fabric";
-option java_outer_classname = "HelloWorldProto";
-option objc_class_prefix = "HLW";
+option java_outer_classname = "FabricProto";
+option objc_class_prefix = "FAJ";
 
 package fabric;
 
@@ -38,8 +38,35 @@ message Message {
       RESPONSE = 20;
       CONSENSUS = 21;
   }
-  Type type = 2;
-  google.protobuf.Timestamp timestamp = 3;
-  bytes payload = 4;
-  bytes signature = 5;
+  Type type = 1;
+  google.protobuf.Timestamp timestamp = 2;
+  bytes payload = 3;
+  bytes signature = 4;
+}
+
+message PeerID {
+    string name = 1;
+}
+
+message PeerEndpoint {
+    PeerID ID = 1;
+    string address = 2;
+    enum Type {
+      UNDEFINED = 0;
+      VALIDATOR = 1;
+      NON_VALIDATOR = 2;
+    }
+    Type type = 3;
+    bytes pkiID = 4;
+}
+
+message HelloMessage {
+  PeerEndpoint peerEndpoint = 1;
+  BlockchainInfo blockchainInfo = 2;
+}
+
+message BlockchainInfo {
+    uint64 height = 1;
+    bytes currentBlockHash = 2;
+    bytes previousBlockHash = 3;
 }
