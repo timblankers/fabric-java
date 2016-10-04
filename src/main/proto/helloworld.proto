@@ -11,7 +11,7 @@ option objc_class_prefix = "HLW";
 package helloworld;
 
 service Greeter {
-  rpc SayHello (stream Message) returns (stream Message) {}
+  rpc Chat (Message) returns (Message) {}
 }
 
 message Message {

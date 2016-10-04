@@ -43,7 +43,7 @@ import java.util.logging.Logger;
 import java.time.Instant;
 
 /**
- * A simple client that sends a discovery message
+ * A simple client that requests a greeting from the {@link HelloWorldServer}.
  */
 public class HelloWorldClient {
   private static final Logger logger = Logger.getLogger(HelloWorldClient.class.getName());
@@ -75,11 +75,11 @@ public class HelloWorldClient {
         Message.newBuilder()
           .setName(name)
           .setType(Message.Type.DISC_HELLO)
-          .setTimestamp(Timestamp.newBuilder().setSeconds(time.getEpochSecond())
+          .setTimestamp(Timestamp.newBuilder().setSeconds(time.getEpochSecond()))
           .build();
     Message response;
     try {
-      response = blockingStub.sayHello(request);
+      response = blockingStub.chat(request);
     } catch (StatusRuntimeException e) {
       logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
       return;
