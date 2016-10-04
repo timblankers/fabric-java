@@ -4,13 +4,13 @@ syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 
 option java_multiple_files = true;
-option java_package = "io.grpc.examples.helloworld";
+option java_package = "io.grpc.fabric";
 option java_outer_classname = "HelloWorldProto";
 option objc_class_prefix = "HLW";
 
-package helloworld;
+package fabric;
 
-service Greeter {
+service Peer {
   rpc Chat (Message) returns (Message) {}
 }
 
@@ -38,7 +38,6 @@ message Message {
       RESPONSE = 20;
       CONSENSUS = 21;
   }
-  string name = 1;
   Type type = 2;
   google.protobuf.Timestamp timestamp = 3;
   bytes payload = 4;

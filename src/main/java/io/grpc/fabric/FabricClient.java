@@ -29,7 +29,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.grpc.examples.helloworld;
+package io.grpc.fabric;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -45,35 +45,30 @@ import java.time.Instant;
 /**
  * A simple client that requests a greeting from the {@link HelloWorldServer}.
  */
-public class HelloWorldClient {
-  private static final Logger logger = Logger.getLogger(HelloWorldClient.class.getName());
+public class FabricClient {
+  private static final Logger logger = Logger.getLogger(FabricClient.class.getName());
 
   private final ManagedChannel channel;
-  private final GreeterGrpc.GreeterBlockingStub blockingStub;
+  private final PeerGrpc.PeerBlockingStub blockingStub;
 
   /** Construct client connecting to HelloWorld server at {@code host:port}. */
-  public HelloWorldClient(String host, int port) {
+  public FabricClient(String host, int port) {
     channel = ManagedChannelBuilder.forAddress(host, port)
         // Channels are secure by default (via SSL/TLS). For the example we disable TLS to avoid
         // needing certificates.
         .usePlaintext(true)
         .build();
-    blockingStub = GreeterGrpc.newBlockingStub(channel);
+    blockingStub = PeerGrpc.newBlockingStub(channel);
   }
 
   public void shutdown() throws InterruptedException {
     channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
   }
 
-  /** Say hello to server. */
-  public void greet(String name) {
-    logger.info("Will try to greet " + name + " ...");
-
+  public void greet() {
     Instant time = Instant.now();
-
     Message request =
         Message.newBuilder()
-          .setName(name)
           .setType(Message.Type.DISC_HELLO)
           .setTimestamp(Timestamp.newBuilder().setSeconds(time.getEpochSecond()))
           .build();
@@ -87,19 +82,10 @@ public class HelloWorldClient {
     logger.info("Greeting: " + response.getType());
   }
 
-  /**
-   * Greet server. If provided, the first element of {@code args} is the name to use in the
-   * greeting.
-   */
   public static void main(String[] args) throws Exception {
-    HelloWorldClient client = new HelloWorldClient("localhost", 7051);
+    FabricClient client = new FabricClient("localhost", 7051);
     try {
-      /* Access a service running on the local machine on port 7051 */
-      String user = "world";
-      if (args.length > 0) {
-        user = args[0]; /* Use the arg as the name to greet if provided */
-      }
-      client.greet(user);
+      client.greet();
     } finally {
       client.shutdown();
     }
