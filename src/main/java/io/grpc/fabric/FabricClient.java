@@ -4,8 +4,9 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 import com.google.protobuf.Timestamp;
+import com.google.protobuf.ByteString;
 
-
+import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,15 +30,45 @@ public class FabricClient {
   }
 
   public void discover() {
+    ByteString bytes = ByteString.copyFromUtf8("test");
+    BlockchainInfo blockchainInfo =
+      BlockchainInfo.newBuilder()
+        .setHeight(0)
+        .setCurrentBlockHash(bytes)
+        .setPreviousBlockHash(bytes)
+        .build();
+
+    PeerID peerID =
+      PeerID.newBuilder()
+        .setName("JavaPeer")
+        .build();
+
+    ByteString bytes2 = ByteString.copyFromUtf8("123");
+    PeerEndpoint peerEndpoint =
+      PeerEndpoint.newBuilder()
+        .setID(peerID)
+        .setAddress("localhost")
+        .setType(PeerEndpoint.Type.NON_VALIDATOR)
+        .setPkiID(bytes2)
+        .build();
+
+    HelloMessage helloMessage =
+      HelloMessage.newBuilder()
+        .setPeerEndpoint(peerEndpoint)
+        .setBlockchainInfo(blockchainInfo)
+        .build();
+
     Instant time = Instant.now();
-    Message request =
-        Message.newBuilder()
-          .setType(Message.Type.DISC_HELLO)
-          .setTimestamp(Timestamp.newBuilder().setSeconds(time.getEpochSecond()))
-          .build();
+    Message discovery =
+      Message.newBuilder()
+        .setType(Message.Type.DISC_HELLO)
+        .setTimestamp(Timestamp.newBuilder().setSeconds(time.getEpochSecond()))
+        .setPayload(helloMessage)
+        .build();
+
     Message response;
     try {
-      response = blockingStub.chat(request);
+      response = blockingStub.chat(discovery);
     } catch (StatusRuntimeException e) {
       logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
       return;
