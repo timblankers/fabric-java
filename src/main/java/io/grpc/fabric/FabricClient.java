@@ -63,7 +63,7 @@ public class FabricClient {
       Message.newBuilder()
         .setType(Message.Type.DISC_HELLO)
         .setTimestamp(Timestamp.newBuilder().setSeconds(time.getEpochSecond()))
-        .setPayload(helloMessage)
+        .setPayload(helloMessage.toByteString())
         .build();
 
     Message response;

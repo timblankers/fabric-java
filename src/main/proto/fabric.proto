@@ -8,7 +8,7 @@ option java_package = "io.grpc.fabric";
 option java_outer_classname = "FabricProto";
 option objc_class_prefix = "FAJ";
 
-package fabric;
+package protos;
 
 service Peer {
   rpc Chat (Message) returns (Message) {}
