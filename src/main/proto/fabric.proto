@@ -11,7 +11,7 @@ option objc_class_prefix = "FAJ";
 package protos;
 
 service Peer {
-  rpc Chat (Message) returns (Message) {}
+  rpc Chat (stream Message) returns (stream Message) {}
 }
 
 message Message {
