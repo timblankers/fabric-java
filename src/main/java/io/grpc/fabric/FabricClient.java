@@ -18,11 +18,16 @@ import java.util.concurrent.TimeUnit;
 import java.time.Instant;
 
 public class FabricClient {
+  public static final int PORT = 7051;
+
   private static final Logger logger = Logger.getLogger(FabricClient.class.getName());
 
   private final ManagedChannel channel;
   private final PeerGrpc.PeerBlockingStub blockingStub;
   private final PeerGrpc.PeerStub asyncStub;
+
+
+  private int curBlockHeight = 0;
 
   public FabricClient(String host, int port) {
     channel = ManagedChannelBuilder.forAddress(host, port)
@@ -43,9 +48,14 @@ public class FabricClient {
       asyncStub.chat(new StreamObserver<Message>() {
         @Override
         public void onNext(Message incoming) {
-          info("Receiving message \"{0}\" at {1}", incoming.getType(), incoming.getTimestamp());
           if (incoming.getType() == Message.Type.DISC_HELLO) {
-            info("lets send a disc_peers!!");
+            info("DISC_HELLO received");
+            try {
+              HelloMessage helloMessage = HelloMessage.parseFrom(incoming.getPayload());
+              info("HelloMessage: {0}", helloMessage);
+            } catch (Exception e) {
+              info(e.getMessage());
+            }
           }
         }
 
@@ -65,7 +75,7 @@ public class FabricClient {
     logger.info("[server] ...StreamObserver ready");
 
     try {
-      Message[] requests = { newMessage(Message.Type.DISC_HELLO), newMessage(Message.Type.DISC_PEERS) };
+      Message[] requests = { newMessage(Message.Type.DISC_HELLO), newMessage(Message.Type.DISC_HELLO) };
 
       for (Message request : requests) {
         info("Sending message \"{0}\" at {1}", request.getType(), request.getTimestamp());
@@ -123,7 +133,7 @@ public class FabricClient {
   }
 
   public static void main(String[] args) throws Exception {
-    FabricClient client = new FabricClient("localhost", 7051);
+    FabricClient client = new FabricClient("localhost", PORT);
     try {
       client.discover();
     } finally {
