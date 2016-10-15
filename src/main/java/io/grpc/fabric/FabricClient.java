@@ -14,6 +14,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.concurrent.TimeUnit;
 import java.time.Instant;
 
 public class FabricClient {
@@ -43,6 +44,9 @@ public class FabricClient {
         @Override
         public void onNext(Message incoming) {
           info("Receiving message \"{0}\" at {1}", incoming.getType(), incoming.getTimestamp());
+          if (incoming.getType() == Message.Type.DISC_HELLO) {
+            info("lets send a disc_peers!!");
+          }
         }
 
         @Override
@@ -58,14 +62,15 @@ public class FabricClient {
           finishLatch.countDown();
         }
       });
-    logger.info("[server] ... StreamObserver ready");
+    logger.info("[server] ...StreamObserver ready");
 
     try {
-      Message[] requests = { newMessage() };
+      Message[] requests = { newMessage(Message.Type.DISC_HELLO), newMessage(Message.Type.DISC_PEERS) };
 
       for (Message request : requests) {
         info("Sending message \"{0}\" at {1}", request.getType(), request.getTimestamp());
         requestObserver.onNext(request);
+        TimeUnit.SECONDS.sleep(8);
       }
     } catch (RuntimeException e) {
       requestObserver.onError(e);
@@ -76,25 +81,7 @@ public class FabricClient {
     finishLatch.await(1, TimeUnit.MINUTES);
   }
 
-  // public void discover() {
-    // Iterator<Message> responses;
-    // // Collection<Message> discoveries;
-    // Message discovery = newMessage();
-    //
-    // try {
-    //   // responses = blockingStub.chat(discovery);
-    // } catch (StatusRuntimeException e) {
-    //   logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-    //   return;
-    // }
-    // while (responses.hasNext()) {
-    //   Object element = responses.next();
-    //   logger.info("[response] " + element);
-    // }
-    // logger.info("Response: " + response.getType());
-  // }
-
-  private Message newMessage() {
+  private Message newMessage(Message.Type messageType) {
     ByteString bytes = ByteString.copyFromUtf8("test");
     BlockchainInfo blockchainInfo =
       BlockchainInfo.newBuilder()
@@ -125,7 +112,7 @@ public class FabricClient {
 
     Instant time = Instant.now();
     return Message.newBuilder()
-        .setType(Message.Type.DISC_HELLO)
+        .setType(messageType)
         .setTimestamp(Timestamp.newBuilder().setSeconds(time.getEpochSecond()))
         .setPayload(helloMessage.toByteString())
         .build();
